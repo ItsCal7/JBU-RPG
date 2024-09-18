@@ -1,0 +1,9 @@
+﻿Fists, Weapon, 1;
+Softball Bat, Weapon, 5;
+Spikeball, Weapon, 10;
+To-Go Box, Armour, 1;
+Accounting Textbook, Armour, 5;
+JBU Crest, Armour 10;
+JBU Handbook, Reading, 1;
+Library Book, Reading, 3;
+Pew Bible, Reading, 6;
