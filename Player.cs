@@ -18,6 +18,21 @@ public class Player:Character
         Heart = 1;
         Hand = 1;
     }
+	
+	public void player(int level, int xp, SortedSet<string> backpack, string weapon, string armour, int head, int heart, int hand)
+    {
+        _level = level;
+        _xp = xp;
+		foreach(string item in backpack)
+		{
+			_backpack.Add(item);
+		}
+        _weapon = weapon;
+        _armour = armour;
+        Head = head;
+        Heart = heart;
+        Hand = hand;
+    }
     
     public int XP
     {

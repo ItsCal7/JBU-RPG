@@ -7,8 +7,10 @@ public static class MainMenu
     public static void Main(string[] args)
     {
         ConsoleKeyInfo userInput;
-        List<string> slots = new List<string>() {"empty", "empty", "empty"};
-        bool savedGame = false;
+        string[] save1 = File.ReadAllLines(@"C:\\save1.txt");
+        string[] save2 = File.ReadAllLines(@"C:\\save2.txt");
+        string[] save3 = File.ReadAllLines(@"C:\\save3.txt");
+		List<string[]> slots = [save1, save2, save3];
         Console.Write("Welcome to the (unofficial) JBU RPG");
         Console.Write(Art.AltShield);
         while(true)
@@ -52,11 +54,11 @@ public static class MainMenu
         }
     }
 
-    public static void StartGame(ref List<string> slots) 
+    public static void StartGame(ref List<string[]> slots) 
         //TODO: change the call-by for the variables
     {
         Console.WriteLine("Choose A Save Slot");
-        Console.WriteLine("1 - " + slots[0] + ", 2 - " + slots[1] + ", 3 - " + slots[2]);
+        Console.WriteLine("1 - " + slots[0][0] + ", 2 - " + slots[1][0] + ", 3 - " + slots[2][0]);
         Console.WriteLine("Type 'X' to quit");
         string newSlot = Console.ReadLine().ToUpper();
         switch (newSlot)
@@ -80,7 +82,7 @@ public static class MainMenu
                 break;
         }
     }
-    public static void ContinueGame(ref List<string> slots)
+    public static void ContinueGame(ref List<string[]> slots)
         //TODO: change the call-by for the variables
     {
         Console.WriteLine("Select Saved Game");
