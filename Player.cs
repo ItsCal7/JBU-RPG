@@ -2,30 +2,32 @@
 
 public class Player:Character
 {
-    public SortedSet<string> _backpack = new SortedSet<string>();
+    protected SortedSet<string> Backpack = new SortedSet<string>();
     private static int _level;
     private static int _xp;
-    private static string _weapon;
+    private static int _weapon;
     private static string _armour;
 
     public void player()
     {
+        Name = "Volen";
         _level = 1;
         _xp = 0;
-        _weapon = "Fist";
+        _weapon = 1;
         _armour = "To-Go Box";
         Head = 1;
         Heart = 1;
         Hand = 1;
     }
 	
-	public void player(int level, int xp, SortedSet<string> backpack, string weapon, string armour, int head, int heart, int hand)
+	public void player(string name, int level, int xp, SortedSet<string> backpack, int weapon, string armour, int head, int heart, int hand)
     {
+        Name = name;
         _level = level;
         _xp = xp;
 		foreach(string item in backpack)
 		{
-			_backpack.Add(item);
+			Backpack.Add(item);
 		}
         _weapon = weapon;
         _armour = armour;
@@ -49,16 +51,20 @@ public class Player:Character
         _xp = xp / 100;
     }
 
-    public static void Equip(string item)
+    protected static void EquipWeapon(int item)
     {
-        _item = item;
+        _weapon = item;
+    }
+    protected static void EquipArmour(string item)
+    {
+        _armour = item;
     }
     
     public override void Attack(Character target)
     {
-        if (Hand > target.Heart)//add weapon mod
+        if (Hand > target.Heart/2)
         {
-            target.Heart -= Hand;
+            target.Heart -= Hand * _weapon;
         }
         else
         {

@@ -7,10 +7,11 @@ public static class MainMenu
     public static void Main(string[] args)
     {
         ConsoleKeyInfo userInput;
-        string[] save1 = File.ReadAllLines(@"C:\\save1.txt");
-        string[] save2 = File.ReadAllLines(@"C:\\save2.txt");
-        string[] save3 = File.ReadAllLines(@"C:\\save3.txt");
+        string[] save1 = File.ReadAllLines(@"..\..\..\save1.txt");
+        string[] save2 = File.ReadAllLines(@"..\..\..\save2.txt");
+        string[] save3 = File.ReadAllLines(@"..\..\..\save3.txt");
 		List<string[]> slots = [save1, save2, save3];
+        bool savedGame = false;
         Console.Write("Welcome to the (unofficial) JBU RPG");
         Console.Write(Art.AltShield);
         while(true)
@@ -30,7 +31,7 @@ public static class MainMenu
             switch (userInput.Key)
             {
                 case ConsoleKey.D1 or ConsoleKey.NumPad1:
-                    StartGame(ref slots);
+                        StartGame(ref slots);
                     savedGame = true;
                     break;
                 case ConsoleKey.D2 or ConsoleKey.NumPad2:
@@ -54,7 +55,7 @@ public static class MainMenu
         }
     }
 
-    public static void StartGame(ref List<string[]> slots) 
+    private static void StartGame(ref List<string[]> slots) 
         //TODO: change the call-by for the variables
     {
         Console.WriteLine("Choose A Save Slot");
@@ -65,7 +66,7 @@ public static class MainMenu
         {
             case "1" or "2" or "3":
                 int index = int.Parse(newSlot);
-                if (!slots[index-1].Equals("empty"))
+                if (!slots[index-1][0].Equals("empty"))
                 {
                     Console.WriteLine("This will overwrite the saved data");
                     Console.WriteLine("Continue: Y/N");
@@ -75,18 +76,19 @@ public static class MainMenu
                         break;
                     }
                 }
-                slots[index - 1] = "saved game";
+                slots[index - 1][0] = DateTime.Now.ToString();
                 Console.WriteLine("Starting Game " + newSlot);
+                Areas.Opening();
                 break;
             case "X":
                 break;
         }
     }
-    public static void ContinueGame(ref List<string[]> slots)
+    private static void ContinueGame(ref List<string[]> slots)
         //TODO: change the call-by for the variables
     {
         Console.WriteLine("Select Saved Game");
-        Console.WriteLine("1 - " + slots[0] + ", 2 - " + slots[1] + ", 3 - " + slots[2]);
+        Console.WriteLine("1 - " + slots[0][0] + ", 2 - " + slots[1][0] + ", 3 - " + slots[2][0]);
         Console.WriteLine("Type 'X' to quit");
         string saveSlot = Console.ReadLine().ToUpper();
         switch (saveSlot)
@@ -104,6 +106,5 @@ public static class MainMenu
             case "X":
                 break;
         }
-        
     }
 }
