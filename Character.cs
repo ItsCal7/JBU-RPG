@@ -49,7 +49,7 @@ public class Character
     
     public virtual void Attack(Character target)
     {
-        if (_hand > target.Heart/2)
+        if (_hand > target.Heart/2) //aaaaaaaaaaa
         {
             target.Heart -= _hand;
         }

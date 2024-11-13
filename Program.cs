@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace JBU_RPG_Project;
 
@@ -7,103 +8,104 @@ public static class MainMenu
     public static void Main(string[] args)
     {
         ConsoleKeyInfo userInput;
-        string[] save1 = File.ReadAllLines(@"..\..\..\save1.txt");
-        string[] save2 = File.ReadAllLines(@"..\..\..\save2.txt");
-        string[] save3 = File.ReadAllLines(@"..\..\..\save3.txt");
-		List<string[]> slots = [save1, save2, save3];
         bool savedGame = false;
-        Console.Write("Welcome to the (unofficial) JBU RPG");
-        Console.Write(Art.AltShield);
         while(true)
         {
+            Console.Write("Welcome to the (unofficial) JBU RPG");
+            Console.Write(Art.AltShield);
+            //first gets the name attached to the save file
+            string save1 = File.ReadLines(@"..\..\..\save1.txt").First();
+            string save2 = File.ReadLines(@"..\..\..\save2.txt").First();
+            string save3 = File.ReadLines(@"..\..\..\save3.txt").First();
+            List<string> slots = [save1, save2, save3];
+            
             Console.WriteLine("Press Escape to Exit at Any Time");
             Console.WriteLine("1. Start Game");
-            Console.Write("2. Continue Game");
-            if (savedGame)
-                Console.WriteLine();
-            else
+            if (!slots.All(s => s.Contains("empty")))
             {
-                Console.WriteLine(" - x");
+                savedGame = true;
+                Console.WriteLine("2. Continue Game");//if any of the slots are saved, continue game appears
             }
-
-            userInput = Console.ReadKey();
+            
+            //I use readkey so the user can use escape to exit the game
+            userInput = Console.ReadKey(); 
             Console.WriteLine();
             switch (userInput.Key)
             {
                 case ConsoleKey.D1 or ConsoleKey.NumPad1:
-                        StartGame(ref slots);
-                    savedGame = true;
+                    StartGame(ref slots, false);
                     break;
+                
                 case ConsoleKey.D2 or ConsoleKey.NumPad2:
                     if (savedGame)
                     {
-                        ContinueGame(ref slots);
+                        StartGame(ref slots, true);
                     }
                     else
                     {
                         Console.WriteLine("No Saved Games");
                     }
-
                     break;
+                
                 case ConsoleKey.Escape:
-                    System.Environment.Exit(0);
+                    System.Environment.Exit(0); //I love this so much
                     return;
+                
+                case ConsoleKey.Delete: // developer option to clear all slots just in case
+                    SaveGame.clearSave(1);
+                    SaveGame.clearSave(2);
+                    SaveGame.clearSave(3);
+                    break;
+                
                 default:
                     Console.WriteLine("Invalid Input, Try Again");
                     break;
             }
+            Console.WriteLine("o");
+            //For whatever reason, on loops, the program submits a newline after the first character
+            //but not every character, . # * and % are all safe. It appears to be alphanumeric.
+            //underlines, much like not having the WriteLine here, cause the program to not loop to the beginning
+            //It works, this is all that matters
+            //Besides, you can't see the o unless you scroll up
         }
     }
 
-    private static void StartGame(ref List<string[]> slots) 
-        //TODO: change the call-by for the variables
+    //was originally two different functions, but consolidated to remove repetition
+    private static void StartGame(ref List<string> slots, bool cont) 
     {
-        Console.WriteLine("Choose A Save Slot");
-        Console.WriteLine("1 - " + slots[0][0] + ", 2 - " + slots[1][0] + ", 3 - " + slots[2][0]);
-        Console.WriteLine("Type 'X' to quit");
-        string newSlot = Console.ReadLine().ToUpper();
-        switch (newSlot)
+        Console.WriteLine(cont ? "Select Saved Game" : "Choose A Save Slot");
+        
+        Console.WriteLine("1 - " + slots[0] + ", 2 - " + slots[1] + ", 3 - " + slots[2]);
+        Console.WriteLine("Press escape at any time to quit to main menu");
+        
+        var slot = Console.ReadKey();
+        Console.WriteLine();
+        switch (slot.Key)
         {
-            case "1" or "2" or "3":
-                int index = int.Parse(newSlot);
-                if (!slots[index-1][0].Equals("empty"))
+            case ConsoleKey.D1 or ConsoleKey.D2 or ConsoleKey.D3 or ConsoleKey.NumPad1 or ConsoleKey.NumPad2 or ConsoleKey.NumPad3:
+                int index = int.Parse(slot.KeyChar.ToString()); //Messy but works
+                if (cont) //case where they are loading a game with no data handled within LoadGame.Load
+                {
+                    Console.WriteLine("Loading Game " + slot);
+                    LoadGame.Load(index);
+                    break;
+                }
+                
+                else if (!slots[index-1].Equals("empty")) // checks if chosen slot is not empty
                 {
                     Console.WriteLine("This will overwrite the saved data");
                     Console.WriteLine("Continue: Y/N");
-                    string overwrite = Console.ReadLine().ToUpper();
-                    if (overwrite == "N")
-                    {
+                    var overwrite = Console.ReadKey();
+                    if (overwrite.Key != ConsoleKey.Y) //if they do anything but agree, assume they meant to deny
                         break;
-                    }
                 }
-                slots[index - 1][0] = DateTime.Now.ToString();
-                Console.WriteLine("Starting Game " + newSlot);
-                Areas.Opening();
+                //if they overwrite, or if the slot is empty and they are not loading a game, they end up here
+                Console.WriteLine("Starting Game " + index);
+                SaveGame.StartSave(index);
                 break;
-            case "X":
-                break;
-        }
-    }
-    private static void ContinueGame(ref List<string[]> slots)
-        //TODO: change the call-by for the variables
-    {
-        Console.WriteLine("Select Saved Game");
-        Console.WriteLine("1 - " + slots[0][0] + ", 2 - " + slots[1][0] + ", 3 - " + slots[2][0]);
-        Console.WriteLine("Type 'X' to quit");
-        string saveSlot = Console.ReadLine().ToUpper();
-        switch (saveSlot)
-        {
-            case "1" or "2" or "3":
-                if (slots[int.Parse(saveSlot) - 1].Equals("empty"))
-                {
-                    Console.WriteLine("Starting Game");
-                }
-                else
-                {
-                    Console.WriteLine("Loading Game " + saveSlot);
-                }
-                break;
-            case "X":
+            
+            case ConsoleKey.Escape: //This takes back to main menu instead of exiting
+                                    //makes more UX sense as a back button than a quit button
                 break;
         }
     }

@@ -8,9 +8,11 @@ public class Player:Character
     private static int _weapon;
     private static string _armour;
 
-    public void player()
+    public void player() //new player creation
     {
-        Name = "Volen";
+        Console.WriteLine("What is your Name");
+        string name = Console.ReadLine();
+        Name = name;
         _level = 1;
         _xp = 0;
         _weapon = 1;
@@ -20,15 +22,12 @@ public class Player:Character
         Hand = 1;
     }
 	
-	public void player(string name, int level, int xp, SortedSet<string> backpack, int weapon, string armour, int head, int heart, int hand)
+	public void player(string name, int level, int xp, int weapon, string armour, int head, int heart, int hand)
+    //loading a player, for starting a save file
     {
         Name = name;
         _level = level;
         _xp = xp;
-		foreach(string item in backpack)
-		{
-			Backpack.Add(item);
-		}
         _weapon = weapon;
         _armour = armour;
         Head = head;
@@ -46,9 +45,13 @@ public class Player:Character
         }
     }
 
-    private static void CalculateLevel(int xp)
+    public int Weapon { get => _weapon; }
+    
+    public string Armour { get => _armour; }
+    
+    public int CalculateLevel(int xp)
     {
-        _xp = xp / 100;
+        return _level = xp / 100;
     }
 
     protected static void EquipWeapon(int item)
@@ -62,7 +65,7 @@ public class Player:Character
     
     public override void Attack(Character target)
     {
-        if (Hand > target.Heart/2)
+        if (true) //haven't made block working yet, so it always lands
         {
             target.Heart -= Hand * _weapon;
         }
